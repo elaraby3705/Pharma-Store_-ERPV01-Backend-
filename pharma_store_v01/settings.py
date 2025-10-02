@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Installed apps at the project level. 
+    'rest_framework', # rest needed for APIs
+    #Custom Pharma ERP Apps (The Modular Monolith)
     'users',
     'catalog',
     'inventory',
