@@ -1,54 +1,187 @@
-# Pharma-Store_-ERPV01-Backend-
- - Production Environment
+# Pharma ERP V01 - Modular Monolith Backend
 
+## 📌 Overview
 
-  # Pharma-ERPV2-Backend - Development Environment
+Pharma ERP V01 is a **Django-powered ERP system** designed for **pharmacies, suppliers, and healthcare distributors**.
+It combines **inventory management, e-commerce workflows, and predictive analytics** into a unified **Modular Monolith** architecture, following **12-Factor App principles** for scalability and maintainability.
 
-## Purpose
-This branch serves as the primary integration hub for all new features before they are validated and promoted to the `main` (Production) branch. The code here reflects the latest complete and tested features.
+The project is structured for **collaborative development** and welcomes external contributions.
 
-## Key Project Documentation
-For comprehensive understanding of the project structure and vision, refer to these foundational documents:
+---
 
-1.  **Full ERD Blueprint:** Defines all 21 core tables and their relationships, ensuring data integrity across the Catalog, Inventory, and Orders domains.
-2.  **Dual Data Flow Pipeline:** Outlines the core system architecture, separating the **Transactional Flow** (focusing on speed and order processing) from the **Analytical/AI Flow** (focusing on strategic insights and forecasting).
+## 🚀 Key Features
 
-## Local Setup (For Developers)
+* **User & Role Management**
+  Authentication, user profiles, geolocation, and company/branch structures.
 
-The following steps enforce **Dev/Prod Parity (Factor X)** and **Configuration Isolation (Factor III)**:
+* **Catalog & Products**
+  Manufacturers, active ingredients, dosage forms, product variants, and detailed drug formulations.
 
-1.  **Prerequisites:** Install Docker and Docker Compose.
-2.  **Configuration (Factor III):** Create a local `.env` file at the project root. This file must hold all secret settings and backing service URLs (e.g., `POSTGRES_DB`, `SECRET_KEY`), ensuring no sensitive data is committed to Git.
-3.  **Clone:** Clone the repository and source the local `.env` file.
-4.  **Run Services:** Start all required services (Application, PostgreSQL database, and Redis cache).
-    ```bash
-    docker-compose up --build
-    ```
-5.  **Run Migrations:**
-    ```bash
-    docker-compose exec app python manage.py migrate
-    ```
-6.  **Create Superuser:**
-    ```bash
-    docker-compose exec app python manage.py createsuperuser
-    ```
+* **Inventory Management**
+  Batch-level tracking, expiry monitoring (FEFO/FIFO), supplier relationships, and real-time stock movements.
 
-## Architectural Roadmap: Monolith to Microservices (Explained)
+* **E-commerce & Orders**
+  Shopping cart, checkout, order lifecycle, fulfillment, and delivery tracking.
 
-### Rationale for the Modular Monolith:
-We start with a Modular Monolith **not as the final form**, but as a strategic initial step to achieve **faster Time-to-Market (MVP)** and reduce the initial operational complexity associated with managing distributed services. **Crucially, the app separation (Catalog, Inventory, Orders) establishes the clean domain boundaries required for Factor I (Codebase) and future decoupling.**
+* **AI-Powered Predictions**
+  Demand forecasting per branch & product variant.
 
-### Transition Plan:
-Each isolated Django App serves as the definitive **Blueprint** for a future independent Microservice, adhering to the Strangler Fig Pattern:
+* **Audit & Security**
+  System-wide logging of CRUD operations and sensitive changes.
 
-1.  **Phase 1 (Current): Modular Monolith:** All services run in one Django project, sharing a single database.
-2.  **Phase 2 (Scaling): Microservices Decoupling:** When required by scale, services will be isolated incrementally:
-    * The code for a service (e.g., **Inventory**) is moved to its own repository and deployment environment.
-    * It is assigned its **own dedicated database** (enforcing Factor IV).
-    * Communication switches from internal Python function calls to external **API calls and Asynchronous Message Broker events**.
+---
 
-**Goal:** To build a robust foundation today that scales horizontally tomorrow without a complete rewrite.
+## 🏗️ System Architecture
 
-## Workflow
-- All Pull Requests (PRs) must target the `develop` branch.
-- Every PR must be accompanied by successful unit tests.
+The system is built as a **Modular Monolith** with 4 core Django applications:
+
+| App           | Responsibility                       | Key Models                                                     |
+| ------------- | ------------------------------------ | -------------------------------------------------------------- |
+| **users**     | Authentication, profiles, addresses  | UserProfile, Address                                           |
+| **catalog**   | Product dictionary, lookups, search  | Product, ProductVariant, Manufacturer, ActiveIngredient        |
+| **inventory** | Stock management, pricing, AI data   | Company, Branch, InventoryBatch, Prediction, InventoryMovement |
+| **orders**    | Cart, checkout, fulfillment, reviews | Cart, Order, Shipment, OrderItem, Review                       |
+
+---
+
+## 📊 ERD (Enhanced Blueprint)
+
+The database schema is normalized across **21 entities** including:
+
+* **Users & Organizations:** User, Profile, Company, Branch
+* **Catalog:** Manufacturer, Product, Variant, Ingredients
+* **Inventory:** Batches, Movements, Predictions
+* **Transactions:** Orders, OrderItems, Cart, Shipment
+* **Audit & Feedback:** AuditLog, Review
+
+---
+
+## 🛠️ Tech Stack
+
+* **Backend:** Django 5.x (Python 3.12+)
+* **Database:** PostgreSQL (recommended) / MySQL
+* **Containerization:** Docker & Docker Compose
+* **Documentation:** Swagger / drf-spectacular
+* **Testing:** Pytest & Django Test Framework
+* **CI/CD:** GitHub Actions (planned)
+
+---
+
+## ⚙️ Project Setup
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/<your-username>/pharma-erp-v2.git
+cd pharma-erp-v2
+```
+
+### 2. Setup Environment
+
+```bash
+cp .env.example .env
+```
+
+Update DB credentials, secret keys, and debug options.
+
+### 3. Build & Run (Dockerized)
+
+```bash
+docker-compose up --build
+```
+
+The app will be available at `http://localhost:8000/`.
+
+### 4. Run Migrations & Superuser
+
+```bash
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createsuperuser
+```
+
+### 5. API Documentation
+
+* Swagger/OpenAPI available at:
+  `http://localhost:8000/api/schema/swagger-ui/`
+
+---
+
+## 📂 Codebase Structure
+
+```
+pharma-erp-v2/
+│── users/         # User profiles, addresses
+│── catalog/       # Product catalog, variants, lookups
+│── inventory/     # Stock, branches, movements
+│── orders/        # Cart, orders, shipping, reviews
+│── core/          # Shared settings, utils
+│── docs/          # API & ERD documentation
+│── docker/        # Docker & deployment configs
+│── manage.py
+│── requirements.txt
+│── docker-compose.yml
+│── Dockerfile
+```
+
+---
+
+## 🔐 12-Factor Compliance Highlights
+
+* **Codebase:** Modular Monolith, single repo
+* **Dependencies:** Managed via `pip` + `requirements.txt`
+* **Config:** `.env` environment variables
+* **Backing Services:** Database, Redis (future), Storage
+* **Build/Release/Run:** Docker Compose workflows
+* **Processes:** Stateless Django workers
+* **Logs:** Standardized logging to stdout/stderr
+* **Concurrency:** Gunicorn/ASGI workers for scaling
+* **Disposability:** Quick startup/shutdown via Docker
+* **Dev/Prod Parity:** Docker ensures reproducibility
+
+---
+
+## 👥 Contribution Guidelines
+
+We welcome external contributions!
+
+1. **Fork** the repo
+2. **Create a branch**:
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **Commit changes** with clear messages
+4. **Push** to your fork
+5. **Submit a Pull Request**
+
+### Code Style
+
+* Follow **PEP8** and **Django best practices**
+* Ensure tests pass before submitting PR
+* Use descriptive commit messages
+
+---
+
+## 🛣️ Roadmap
+
+* [x] Enhanced ERD Blueprint (21 Models)
+* [ ] Implement Users & Catalog Apps
+* [ ] Inventory Management with FEFO
+* [ ] Orders & Fulfillment APIs
+* [ ] AI Forecasting Module
+* [ ] CI/CD with GitHub Actions
+* [ ] Deployment to Cloud (AWS/GCP)
+
+---
+
+## 📜 License
+
+This project is licensed under the ** Dev License** – feel free to use and extend with attribution.
+
+---
+
+## 🙌 Acknowledgments
+
+* Inspired by **real-world pharmacy workflows**
+* Designed for **scalability and collaboration**
+* Built with 💙 by contributors around the world
