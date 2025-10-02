@@ -9,11 +9,23 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import environ
+# django-environ
 from pathlib import Path
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Initialize environment variable reading
+env = environ.Env(
+    # Set Casting , default value
+    DEBUG=(bool, False)
+)
+# Read .env file if it exists, use read_env(env_file) instead of default read_env()
+# Reading .env locally ensures Dev/Prod Parity (Factor X)
+environ.Env.read_env(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
