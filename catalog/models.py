@@ -104,3 +104,30 @@ class ProductIngredient(models.Model):
         unique_together =('product','ingredient')
         verbose_name= _("Product Ingredient")
         verbose_name_plural=_("Product Ingredients")
+
+class ProductVariant(models.Model):
+    """The SELLABlE UNIT. this is the specific item linked to Inventory and orders.
+     It combines the parent product with its DOsage Form and Pack Size
+     """
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_("Parent Product"))
+    # PROTECT prevents deletion of a form if variants use it.
+    dosage_form = models.ForeignKey(DosageForm, on_delete=models.PROTECT, verbose_name=_("Dosage Form"))
+
+    strength_text = models.CharField(
+        max_length=100,
+        help_text=_("e.g., 500 mg, 10 mg/5ml"),
+        verbose_name=_("Strength Text")
+    )
+    pack_size = models.IntegerField(verbose_name=_("Pack Size (Units)"))
+    barcode_gtin = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name=_("Barcode/GTIN"))
+    is_prescription_only = models.BooleanField(default=False, verbose_name=_("Prescription Only (Rx)"))
+    is_otc = models.BooleanField(default=False, verbose_name=_("Over-The-Counter (OTC)"))
+
+    class Meta:
+        # Ensures no two variants have the exact same specification
+        unique_together = ('product', 'dosage_form', 'pack_size')
+        verbose_name = _("Product Variant")
+        verbose_name_plural = _("Product Variants")
+
+    def __str__(self):
+        return f"{self.product.brand_name} - {self.strength_text} ({self.dosage_form.name})"
