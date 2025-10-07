@@ -2,6 +2,7 @@ from email.policy import default
 from tabnanny import verbose
 
 from django.db import models
+from django.utils.module_loading import module_has_submodule
 from django.utils.translation import gettext_lazy as _
 from rest_framework.fields import BooleanField
 
@@ -62,4 +63,30 @@ class ATCClass(models.Model):
 
     def __str__(self):
         return f"{self.code} - {self.name}"
+
+# ============
+# 2. Core Product definitions
+# These models define what the product is and its sellable unit .
+# ============
+
+class Product(models.Model):
+    """ The commercial or brand name of a Pharmaceutical product (the parent entity """
+    brand_name=models.CharField(max_length=255, unique=True, verbose_name=_("Brand Name"))
+
+    #Protect prevent deleting a manufacturer if any products are linked to it .
+    manufacturer =models.ForeignKey(Manufacturer, on_delete=models.PROTECT, verbose_name=_("Manufacturer"))
+    atc_class = models.ForeignKey(ATCClass, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("ATC Class"))
+    description = models.TextField(blank=True, verbose_name=_("Descriptions"))
+
+    # This is M:M field links to ActiveIngredient vai the Product Ingredient Table
+    active_ingredients = models.ManyToManyField(
+        ActiveIngredient,
+        through='ProductIngredient',
+        verbose_name=_("Active Ingredients")
+    )
+    class Meta:
+        verbose_name = _("Product (Brand)")
+        verbose_name_plural = _("Product (Brands)")
+    def __str__(self):
+        return self.brand_name
 
