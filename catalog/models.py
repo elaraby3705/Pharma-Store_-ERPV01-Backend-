@@ -22,4 +22,19 @@ class Manufacturer(models.Model):
         verbose_name= _("Manufacturer")
         verbose_name_plural=_("Manufacturers")
 
+    def __str__(self):
+        return self.name
+
+
+class DosageFrom(models.Model):
+    """ The Physical form of the medicine (e.g, Tablets, Syrup, Capsule).
+    Used for filtering and defining Product Variants . """
+    name= models.CharField(max_length=100, unique=True, verbose_name=_("Dosage Form"))
+
+    class Meta:
+        verbose_name = _("Dosage Form")
+        verbose_name_plural= _("Dosage Forms ")
+
+    def __str__(self):
+        return self.name
 
