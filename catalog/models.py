@@ -51,3 +51,15 @@ class ActiveIngredient(models.Model):
     def __str__(self):
         return self.name
 
+class ATCClass(models.Model):
+    """Who's Anatomical Therapeutic chemical (ATC) classification systems (optional)  """
+    code = models.CharField(max_length=10, unique=True ,verbose_name= _("ATC code "))
+    name= models.CharField(max_length=255, verbose_name=_("ATC Classification"))
+
+    class Meta:
+        verbose_name =_("ATC Class")
+        verbose_name_plural=_("ATC Classes")
+
+    def __str__(self):
+        return f"{self.code} - {self.name}"
+
