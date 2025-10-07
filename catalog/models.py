@@ -90,3 +90,17 @@ class Product(models.Model):
     def __str__(self):
         return self.brand_name
 
+class ProductIngredient(models.Model):
+    """
+    Join Table M:M. Stores the strength of a specific ingredient within a Product .
+    Needed because one product can have many Ingredients , and we need the strength value.
+    """
+    product =models.ForeignKey(Product, on_delete=models.CASCADE)
+    ingredient =models.ForeignKey(ActiveIngredient, on_delete=models.CASCADE)
+    strength= models.CharField(max_length=50, verbose_name=_("Strength"))
+
+    class Meta:
+        #Prevent Redundant data : a product can't list the same ingredients twice.
+        unique_together =('product','ingredient')
+        verbose_name= _("Product Ingredient")
+        verbose_name_plural=_("Product Ingredients")
