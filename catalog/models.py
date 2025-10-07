@@ -38,3 +38,16 @@ class DosageFrom(models.Model):
     def __str__(self):
         return self.name
 
+class ActiveIngredient(models.Model):
+    """The chemical responsible for the therapeutic effect (e.g, Paracetamol)
+    Crucial for search functionality by the chemical name .
+    """
+    name = models.CharField(max_length=255, unique=True, verbose_name=_("Active Ingredient"))
+
+    class Meta:
+        verbose_name= _("Active Ingredient")
+        verbose_name_plural = _("Active Ingredients")
+
+    def __str__(self):
+        return self.name
+
