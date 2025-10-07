@@ -57,6 +57,9 @@ INSTALLED_APPS = [
     'orders',
 ]
 
+# INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+#I think later we will use this methods
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
