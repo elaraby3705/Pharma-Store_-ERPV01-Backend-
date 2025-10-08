@@ -1,5 +1,5 @@
 ---
-name: 'Feature: Product Variant Browsing'
+name: 'Feature:  '
 about: 'Public template for the Project '
 title: ''
 labels: ''
