@@ -1,0 +1,40 @@
+# =================
+# PHARMA ERP V2 - PRODUCTION DEPENDENCIES (FACTOR II)
+# ================
+
+# 1. CORE DJANGO & REST FRAMEWORK
+Django==5.2.6
+djangorestframework==3.16.1
+asgiref==3.9.2
+sqlparse==0.5.3
+
+# 2. CONFIGURATION, DB & CACHING
+django-environ==0.12.0
+psycopg2-binary==2.9.10  # PostgreSQL Connector
+mysqlclient==2.2.7       # MySQL Connector (included for flexibility)
+redis==5.0.0             # For Caching (Factor IV)
+python-dateutil==2.9.0.post0
+pytz==2025.2
+tzdata==2025.2
+
+# 3. ASYNCHRONOUS TASKS (CELERY)
+celery==5.3.0
+kombu==5.5.4
+amqp==5.3.1
+billiard==4.2.1
+vine==5.1.0
+
+# 4. SECURITY & APIs
+django-cors-headers==4.7.0
+django-ratelimit==4.0.0
+cryptography==45.0.6
+requests==2.32.4
+urllib3==2.5.0
+
+# 5. API UTILITIES & FILTERS
+django-filter==25.1
+drf-nested-routers==0.94.2
+drf-yasg==1.21.10
+geoip2==4.7.0
+maxminddb==2.8.2
+inflection==0.5.1
