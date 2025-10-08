@@ -1,0 +1,22 @@
+# ------------------------------------
+# 1. SECRETS AND ENVIRONMENT
+# ------------------------------------
+.env
+# *.env  <-- Also good practice if you use other environment file variations
+
+# ------------------------------------
+# 2. PYTHON AND DJANGO GENERATED FILES
+# ------------------------------------
+# Virtual Environment
+.venv/
+venv/
+
+# Compiled files
+__pycache__/
+*.pyc
+
+# Database (only if you had a temporary SQLite file)
+db.sqlite3
+
+# User uploaded media (often huge and shouldn't be in Git)
+/media/
