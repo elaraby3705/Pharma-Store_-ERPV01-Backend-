@@ -8,13 +8,15 @@ from django.contrib.auth.models import User
 # from catalog.models import ProductVariant
 # from inventory.models import Branch, InventoryBatch, Company as DeliveryPartner
 
-# ================
+# ==============================================================================
 # 1. SHOPPING CART LOGIC
 #    Temporary storage for customer selection before checkout.
-# =================
+# ==============================================================================
 
 class Cart(models.Model):
     """Shopping Cart container for a user."""
+    # ERROR FIX 1: Uncommenting customer FK is necessary if you uncomment unique_together on OrderItem, but
+    # we leave it commented for now to avoid the circular dependency unless necessary.
     # customer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart', verbose_name=_("Customer"))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Date Created"))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Last Updated"))
@@ -24,24 +26,30 @@ class Cart(models.Model):
         verbose_name_plural = _("Shopping Carts")
 
     def __str__(self):
-        return f"Cart for {self.customer.username if hasattr(self, 'customer') else 'Anonymous'}"
+        # Placeholder str for now, as customer is commented out
+        return f"Cart for {self.id}"
 
 
 class CartItem(models.Model):
     """Specific product variants and quantities within a Cart."""
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items', verbose_name=_("Cart"))
-    # variant = models.ForeignKey('catalog.ProductVariant', on_delete=models.CASCADE, verbose_name=_("Product Variant"))
+
+    # --- ERROR FIX 2: UNCOMMENTED variant FK to satisfy unique_together constraint ---
+    variant = models.ForeignKey('catalog.ProductVariant', on_delete=models.CASCADE, verbose_name=_("Product Variant"))
+    # ----------------------------------------------------------------------------------
+
     quantity = models.IntegerField(default=1, verbose_name=_("Quantity"))
-    # Snapshot of the price to maintain accuracy even if the price changes later
     unit_price_snapshot = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_("Unit Price Snapshot"))
 
     class Meta:
         verbose_name = _("Cart Item")
-        verbose_plural = _("Cart Items")
-        # Ensure a user cannot add the same item variant twice to the same cart
+        verbose_name_plural = _("Cart Items")
+        # This constraint now correctly references the 'variant' field above
         unique_together = ('cart', 'variant')
 
-# =======================
+    # =======================
+
+
 # 2. ORDER CORE AND ITEMS (TRANSACTIONS)
 #    The final record of a completed transaction.
 # ======================
@@ -58,8 +66,12 @@ class Order(models.Model):
         ('refunded', _('Refunded'))
     ]
 
-    # customer = models.ForeignKey(User, on_delete=models.PROTECT, related_name='orders', verbose_name=_("Customer"))
-    # branch = models.ForeignKey('inventory.Branch', on_delete=models.PROTECT, related_name='fulfilled_orders', verbose_name=_("Fulfilling Branch"))
+    # ERROR FIX 3: Uncommented critical FKs needed for logic flow (optional, but good practice now)
+    customer = models.ForeignKey(User, on_delete=models.PROTECT, related_name='orders', verbose_name=_("Customer"))
+    branch = models.ForeignKey('inventory.Branch', on_delete=models.PROTECT, related_name='fulfilled_orders',
+                               verbose_name=_("Fulfilling Branch"))
+    shipping_address = models.ForeignKey('users.Address', on_delete=models.PROTECT, verbose_name=_("Shipping Address"))
+    # ----------------------------------------------------------------------------------------------
 
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending', verbose_name=_("Order Status"))
     payment_status = models.CharField(max_length=50, choices=PAYMENT_CHOICES, default='unpaid',
@@ -68,30 +80,33 @@ class Order(models.Model):
     total = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_("Total Amount"))
     shipping_fee = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_("Shipping Fee"))
 
-    # shipping_address = models.ForeignKey('users.Address', on_delete=models.PROTECT, verbose_name=_("Shipping Address"))
     placed_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Date Placed"))
 
     class Meta:
         verbose_name = _("Order")
-        verbose_plural = _("Orders")
+        verbose_name_plural = _("Orders")
         ordering = ['-placed_at']
 
 
 class OrderItem(models.Model):
     """Details of products within a specific Order."""
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name=_("Order"))
-    # variant = models.ForeignKey('catalog.ProductVariant', on_delete=models.PROTECT, verbose_name=_("Product Variant"))
 
-    # This FK is crucial: It links the ordered item back to the exact physical stock batch it was fulfilled from.
-    # It is nullable because it is assigned *after* the order is placed (during packing).
-    # batch = models.ForeignKey('inventory.InventoryBatch', on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_("Assigned Batch"))
+    # --- ERROR FIX 4: UNCOMMENTED variant FK to satisfy unique_together constraint ---
+    variant = models.ForeignKey('catalog.ProductVariant', on_delete=models.PROTECT, verbose_name=_("Product Variant"))
+
+    # --- ERROR FIX 5: UNCOMMENTED batch FK required for fulfillment logic ---
+    batch = models.ForeignKey('inventory.InventoryBatch', on_delete=models.SET_NULL, null=True, blank=True,
+                              verbose_name=_("Assigned Batch"))
+    # ------------------------------------------------------------------------
 
     quantity = models.IntegerField(verbose_name=_("Quantity Ordered"))
     unit_price = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_("Agreed Unit Price"))
 
     class Meta:
         verbose_name = _("Order Item")
-        verbose_plural = _("Order Items")
+        verbose_name_plural = _("Order Items")
+        # This constraint now correctly references the 'variant' field above
         unique_together = ('order', 'variant')
 
 
@@ -118,7 +133,7 @@ class Shipment(models.Model):
 
     class Meta:
         verbose_name = _("Shipment")
-        verbose_plural = _("Shipments")
+        verbose_name_plural = _("Shipments")
 
 
 class Review(models.Model):
@@ -132,5 +147,5 @@ class Review(models.Model):
 
     class Meta:
         verbose_name = _("Review")
-        verbose_plural = _("Reviews")
+        verbose_name_plural = _("Reviews")
         ordering = ['-created_at']

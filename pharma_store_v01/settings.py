@@ -93,17 +93,13 @@ WSGI_APPLICATION = 'pharma_store_v01.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Database Configuration (Factor IV: Backing Services)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME':'Pharma_Store',
-        'USER':'postgres',
-        'PASSWORD':'TLD4Net%',
-        'HOST':'localhost',
-        'PORT':'5432',
-    }
+    'default': env.db_url(
+        'DATABASE_URL',
+        default='sqlite:///db.sqlite3' # Fallback default, though we prefer Postgres
+    )
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

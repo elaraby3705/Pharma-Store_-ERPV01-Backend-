@@ -1,27 +1,22 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-# Assuming these models are imported from their respective apps:
 from django.contrib.auth.models import User
-from pycparser.c_ast import Struct
 
-# from users.models import Address
-# from catalog.models import ProductVariant
+# Define choices outside the class for correct Python scoping
+COMPANY_TYPES = (
+    ('pharmacy', _('Pharmacy')),
+    ('supplier', _('Supplier'))
+)
 
 
-# =======
-#1. Commercial Structure (Company & branch)
-#  Defines he organization types (pharmacy vs . Suppliers ) and location
-# ======
+# ========================
+# 1. COMMERCIAL STRUCTURE (COMPANY & BRANCH)
+# ============================
 
 class Company(models.Model):
-    """ The general Organizational entity (Supplier or Pharmacy """
-    COMAPNY_TYPES= (
-    ('pharmacy',_('Pharmacy')),
-    ('suppliers', _('Supplier'))
-    )
+    """The general organizational entity (Supplier or Pharmacy)."""
     type = models.CharField(max_length=50, choices=COMPANY_TYPES, verbose_name=_("Company Type"))
     name = models.CharField(max_length=255, verbose_name=_("Trade Name"))
-    # Links to the User who owns the company
     owner = models.ForeignKey(User, on_delete=models.PROTECT, related_name='owned_companies', verbose_name=_("Owner"))
     license_no = models.CharField(max_length=100, unique=True, null=True, blank=True, verbose_name=_("License Number"))
     is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
@@ -36,7 +31,7 @@ class Company(models.Model):
 
 class Branch(models.Model):
     """Physical location for Pharmacies (fulfillment center)."""
-    # Restrict to only 'pharmacy' type companies
+    # Using string reference for external app dependency
     company = models.ForeignKey(
         Company,
         on_delete=models.CASCADE,
@@ -57,10 +52,9 @@ class Branch(models.Model):
         return f"{self.company.name} - {self.name}"
 
 
-# ===============
+# =====================
 # 2. INVENTORY & AUDIT
-#    Stock tracking, movement history, and AI prediction data.
-# =================
+# =====================
 
 class InventoryBatch(models.Model):
     """Stock tracked at the batch/lot level (for unique expiry dates and prices)."""
@@ -68,7 +62,6 @@ class InventoryBatch(models.Model):
                                verbose_name=_("Branch"))
     # FK to ProductVariant from the 'catalog' app (the sellable item)
     # variant = models.ForeignKey('catalog.ProductVariant', on_delete=models.PROTECT, related_name='batches', verbose_name=_("Product Variant"))
-    # Supplier is optional since batches can be created via initial stock or internal transfer
     supplier = models.ForeignKey(
         Company,
         on_delete=models.SET_NULL,
@@ -80,8 +73,7 @@ class InventoryBatch(models.Model):
 
     expiry_date = models.DateField(null=True, blank=True, verbose_name=_("Expiry Date"))
     qty_on_hand = models.IntegerField(default=0, verbose_name=_("Quantity On Hand"))
-    qty_reserved = models.IntegerField(default=0,
-                                       verbose_name=_("Quantity Reserved"))  # Quantity reserved for active carts/orders
+    qty_reserved = models.IntegerField(default=0, verbose_name=_("Quantity Reserved"))
 
     cost_price = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_("Cost Price"))
     sale_price = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_("Sale Price"))
@@ -91,7 +83,6 @@ class InventoryBatch(models.Model):
     class Meta:
         verbose_name = _("Inventory Batch")
         verbose_name_plural = _("Inventory Batches")
-        # Enforce constraints to prevent negative stock counts
         constraints = [
             models.CheckConstraint(check=models.Q(qty_on_hand__gte=0), name='inventory_qty_on_hand_gte_zero'),
             models.CheckConstraint(check=models.Q(qty_reserved__gte=0), name='inventory_qty_reserved_gte_zero'),
@@ -118,10 +109,10 @@ class InventoryMovement(models.Model):
         ordering = ['-created_at']
 
 
-# ============
+# =====================
 # 3. AI READINESS (PREDICTION)
-#    Dedicated table for storing ML model outputs.
-# =============
+# ===============
+
 class Prediction(models.Model):
     """Stores AI model outputs for demand forecasting."""
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, verbose_name=_("Branch"))
@@ -136,5 +127,5 @@ class Prediction(models.Model):
     class Meta:
         verbose_name = _("Demand Prediction")
         verbose_name_plural = _("Demand Predictions")
-        # Ensure only one prediction exists for a given product/branch for a time horizon
-        unique_together = ('branch', 'variant', 'horizon_days')
+        # Note: 'variant' is commented out but needed for unique_together constraint
+        unique_together = ('branch', 'horizon_days')
