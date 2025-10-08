@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # 1. DJANGO APPLICATION SERVICE (The Modular Monolith)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Links to the environment file in the host root directory (Factor III: Config)
+    env_file:
+      - .env
+
+    # Map the container port 8000 to the host port 8000
+    ports:
+      - "8000:8000"
+
+    # Explicitly define volumes for live code reloading (development feature)
+    volumes:
+      - .:/app
+
+    # Define dependencies to ensure PostgreSQL starts first (Factor V)
+    depends_on:
+      - db
+      - redis
+
+    # Override the CMD from the Dockerfile for development use
+    # Note: For production, we would rely on the Gunicorn CMD in the Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+
+  # 2. POSTGRESQL DATABASE SERVICE (The Primary Backing Service - Factor IV)
+  db:
+    image: postgres:14-alpine
+    # Map container port to host port (optional, but good for local pgAdmin access)
+    ports:
+      - "5432:5432"
+
+    # Environment variables MUST match the DATABASE_URL in your .env file
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}  # e.g., Pharma_Store
+      POSTGRES_USER: ${POSTGRES_USER} # e.g., postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # e.g., *****
+
+    # Use a named volume for persistent data storage (data remains after containers stop)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  # 3. REDIS CACHE SERVICE (Secondary Backing Service - Factor IV)
+  redis:
+    image: redis:alpine
+    # Map port 6379 to itself (standard Redis port)
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+# Define the named volumes
+volumes:
+  postgres_data:
+  redis_data:
