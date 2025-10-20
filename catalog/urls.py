@@ -16,3 +16,14 @@ router.register('manufacturers', ManufacturerViewSet)
 router.register('dosages', DosageFormViewSet)
 router.register('ingredients', ActiveIngredientViewSet)
 router.register('atc-classes', ATCClassViewSet)
+
+#  Registration: /api/v1/products/
+router.register('variants', ProductVariantViewSet)
+
+# Registrations: /api/vi/variants/
+router.register('products', ProductViewSet)
+
+urlpatterns = [
+    # Includes all routes from the router
+    path('', include(router.urls)),
+]
