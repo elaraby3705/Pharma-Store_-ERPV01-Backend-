@@ -40,4 +40,16 @@ class ProductIngredientSerializer(serializers.ModelSerializer):
         model = ProductIngredient
         fields = ['ingredient_name', 'strength']
 
+class ProductSerializer(serializers.ModelSerializer):
+    """Serializer for the core Product (Brand) entity."""
+    # Use nested serializers to display ingredients within the product detail
+    ingredients = ProductIngredientSerializer(source='productingredient_set', many=True, read_only=True)
+    manufacturer_name = serializers.CharField(source='manufacturer.name', read_only=True)
 
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'brand_name', 'manufacturer', 'manufacturer_name',
+            'atc_class', 'description', 'ingredients'
+        ]
+        read_only_fields = ['id', 'manufacturer_name', 'ingredients']
