@@ -1,0 +1,36 @@
+name: 🐞 Bug Report (Gherkin)
+description: Report a reproducible bug using Given/When/Then
+title: "[Bug] <describe issue>"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "## 🧭 Context"
+  - type: textarea
+    attributes:
+      label: "Description"
+      placeholder: "Briefly explain the issue."
+
+  - type: markdown
+    attributes:
+      value: "## 🧪 Gherkin Scenario"
+  - type: textarea
+    attributes:
+      label: "Steps to Reproduce"
+      placeholder: |
+        **Scenario:** Serializer fails to validate null data
+        Given a missing required field
+        When data is serialized
+        Then the API should raise a ValidationError
+
+  - type: markdown
+    attributes:
+      value: "## ✅ Expected vs Actual"
+  - type: textarea
+    attributes:
+      label: "Expected Behavior"
+      placeholder: "What should happen?"
+  - type: textarea
+    attributes:
+      label: "Actual Behavior"
+      placeholder: "What actually happened?"
