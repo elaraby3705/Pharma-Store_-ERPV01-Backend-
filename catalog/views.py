@@ -22,7 +22,7 @@ class ManufacturerViewSet(viewsets.ModelViewSet):
     serializer_class = ManufacturerSerializer
     permission_classes = [permissions.IsAdminUser]
 
-class DosageFormVIewSet(viewsets.ModelViewSet):
+class DosageFormViewSet(viewsets.ModelViewSet):
     """CRUD for DosageForm. admin only"""
     queryset = DosageForm.objects.all()
     serializer_class = DosageFormSerializer
