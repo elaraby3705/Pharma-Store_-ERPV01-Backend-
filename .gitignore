@@ -20,3 +20,7 @@ db.sqlite3
 
 # User uploaded media (often huge and shouldn't be in Git)
 /media/
+
+.idea/
+__pycache__/
+*.pyc
