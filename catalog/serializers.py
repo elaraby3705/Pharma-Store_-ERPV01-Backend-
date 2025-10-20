@@ -53,3 +53,20 @@ class ProductSerializer(serializers.ModelSerializer):
             'atc_class', 'description', 'ingredients'
         ]
         read_only_fields = ['id', 'manufacturer_name', 'ingredients']
+
+class ProductVariantSerializer(serializers.ModelSerializer):
+    """
+        The final, sellable unit. This will be the main serializer used for product listings.
+        """
+    # Display human-readable names for parent entities
+    product_name = serializers.CharField(source='product.brand_name', read_only=True)
+    dosage_form_name = serializers.CharField(source='dosage_form.name', read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = [
+            'id', 'product', 'product_name', 'dosage_form', 'dosage_form_name',
+            'strength_text', 'pack_size', 'barcode_gtin',
+            'is_prescription_only', 'is_otc'
+        ]
+        read_only_fields = ['id', 'product_name', 'dosage_form_name']
