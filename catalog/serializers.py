@@ -21,4 +21,8 @@ class DosageFormSerializer(serializers.ModelSerializer):
         read_only_fields= ['id ']
 
 
-
+class ActiveIngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= ActiveIngredient
+        fields= ['id','name']
+        read_only_fields= ['id']
