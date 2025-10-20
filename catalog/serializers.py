@@ -26,3 +26,18 @@ class ActiveIngredientSerializer(serializers.ModelSerializer):
         model= ActiveIngredient
         fields= ['id','name']
         read_only_fields= ['id']
+
+# ====
+#2. Product serializer (complex / Nested Data )
+# ===
+
+class ProductIngredientSerializer(serializers.ModelSerializer):
+    """Serializer for the M:M relationship, including the 'strength' field."""
+    # Display the ingredient's name directly instead of just the ID
+    ingredient_name = serializers.CharField(source='ingredient.name', read_only=True)
+
+    class Meta:
+        model = ProductIngredient
+        fields = ['ingredient_name', 'strength']
+
+
