@@ -14,3 +14,11 @@ class ManufacturerSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'is_active']
         read_only_fields=['id']
 
+class DosageFormSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActiveIngredient
+        fields= ['id', 'name']
+        read_only_fields= ['id ']
+
+
+
