@@ -1,0 +1,30 @@
+name: 🧠 Feature Implementation (Gherkin)
+description: Describe a new feature or API behavior using Gherkin format
+title: "[Feature] <feature name>"
+labels: ["feature", "backend"]
+body:
+  - type: textarea
+    attributes:
+      label: 🎯 Feature Summary
+      description: Describe the feature in a few sentences
+      placeholder: Implement serializers for Product and Manufacturer models
+  - type: textarea
+    attributes:
+      label: 🧪 Gherkin Scenario
+      description: Write the behavior-driven example (BDD)
+      placeholder: |
+        **Scenario:** Serialize product data
+        Given a valid Product instance exists
+        When the API endpoint /api/catalog/products/ is called
+        Then it should return serialized product data including name, price, and manufacturer
+  - type: textarea
+    attributes:
+      label: ✅ Acceptance Criteria
+      placeholder: |
+        - [ ] Serializer returns correct fields
+        - [ ] Nested Manufacturer is included
+        - [ ] All unit tests pass
+  - type: input
+    attributes:
+      label: 📦 Related Branch
+      placeholder: e.g. 03_serializers_api
