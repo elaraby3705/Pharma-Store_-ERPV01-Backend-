@@ -3,28 +3,47 @@ description: Describe a new feature or API behavior using Gherkin format
 title: "[Feature] <feature name>"
 labels: ["feature", "backend"]
 body:
+  - type: markdown
+    attributes:
+      value: "## 🎯 Feature Summary"
   - type: textarea
     attributes:
-      label: 🎯 Feature Summary
-      description: Describe the feature in a few sentences
-      placeholder: Implement serializers for Product and Manufacturer models
+      label: "Summary"
+      description: "Describe the feature briefly"
+      placeholder: "Implement serializers for the Product and Manufacturer models."
+
+  - type: markdown
+    attributes:
+      value: "## 🧪 Gherkin Scenario"
   - type: textarea
     attributes:
-      label: 🧪 Gherkin Scenario
-      description: Write the behavior-driven example (BDD)
+      label: "Scenario"
+      description: "Write behavior using Given / When / Then format"
       placeholder: |
-        **Scenario:** Serialize product data
+        **Scenario:** Serialize Product data
         Given a valid Product instance exists
-        When the API endpoint /api/catalog/products/ is called
-        Then it should return serialized product data including name, price, and manufacturer
+        When a GET request is sent to /api/catalog/products/
+        Then the API should return serialized data including name, price, and manufacturer.
+
+  - type: markdown
+    attributes:
+      value: "## ✅ Acceptance Criteria"
   - type: textarea
     attributes:
-      label: ✅ Acceptance Criteria
+      label: "Checklist"
       placeholder: |
         - [ ] Serializer returns correct fields
         - [ ] Nested Manufacturer is included
-        - [ ] All unit tests pass
+        - [ ] All serializer tests pass
+
+  - type: markdown
+    attributes:
+      value: "## 🔗 Related Info"
   - type: input
     attributes:
-      label: 📦 Related Branch
-      placeholder: e.g. 03_serializers_api
+      label: "Related Branch"
+      placeholder: "03_serializers_api"
+  - type: input
+    attributes:
+      label: "Milestone"
+      placeholder: "03 – Serializers & DRF API"
